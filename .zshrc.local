@@ -1,0 +1,64 @@
+#Ek5
+
+bindkey -v
+bindkey "^\[\." insert-last-word
+
+export EDITOR=vim
+
+## ALIAS
+alias g="git status"
+alias dm="dmesg"
+alias pigo="ping www.google.it"
+alias y="yaourt"
+alias v="vim"
+
+#Termite 
+if [[ $TERM == xterm-termite ]]; then
+  . /etc/profile.d/vte.sh
+  __vte_osc7
+fi
+
+#ranger
+rg() {
+  if [ -z "$RANGER_LEVEL" ]
+  then
+    ranger
+  else
+    exit
+  fi
+}   
+
+# Compatible with ranger 1.4.2 through 1.7.*
+#
+# Automatically change the directory in bash after closing ranger
+#
+# This is a bash function for .bashrc to automatically change the directory to
+# the last visited one after ranger quits.
+# To undo the effect of this function, you can type "cd -" to return to the
+# original directory.
+
+function ranger-cd {
+    tempfile="$(mktemp)"
+    /usr/bin/ranger --choosedir="$tempfile" "${@:-$(pwd)}"
+    test -f "$tempfile" &&
+    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
+        cd -- "$(cat "$tempfile")"
+    fi
+    rm -f -- "$tempfile"
+}
+
+function ranger-cd-show() { BUFFER="ranger-cd"; zle accept-line; }
+
+zle -N ranger-cd-show
+
+# This binds Ctrl-O to ranger-cd:
+bindkey "\C-o" ranger-cd-show
+
+# function zle-line-init zle-keymap-select {
+#   VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
+#   RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $(git_custom_status) $EPS1"
+#   zle reset-prompt
+# }
+# zle -N zle-line-init
+# zle -N zle-keymap-select
+

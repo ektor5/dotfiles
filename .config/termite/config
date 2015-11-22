@@ -1,0 +1,11 @@
+[options]
+font = Terminus 12
+#font = Monospace 9
+#font = Droid Sans Mono 8
+scrollback_lines = 1000
+browser = firefox
+
+[colors]
+background = rgba(63, 63, 63, 0.8)
+
+
