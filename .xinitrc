@@ -15,7 +15,7 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
 fi
 
 ## env
-export GTK_THEME=Adwaita:dark
+export GTK_THEME=Adwaita:light 
 export TERMINAL=termite
 export TERMCMD=termite
 
