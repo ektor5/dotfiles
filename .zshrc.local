@@ -16,6 +16,9 @@ alias dm="dmesg"
 alias pigo="ping www.google.it"
 alias y="yaourt"
 alias v="vim"
+alias sshp="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+alias scpp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 
 #Termite 
 if [[ $TERM == xterm-termite ]]; then
