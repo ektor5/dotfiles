@@ -100,14 +100,15 @@ if !exists(":DiffOrig")
 endif
 
 " Konami code
-"inoremap <up> <nop>
+inoremap <up> <nop>
 vnoremap <up> <nop>
 
-"inoremap <down> <nop>
+inoremap <down> <nop>
 vnoremap <down> <nop>
 
-"inoremap <left> <nop>
+inoremap <left> <nop>
 vnoremap <right> <nop>
 
 vnoremap <left> <nop>
-"inoremap <right> <nop>
+inoremap <right> <nop>
+
