@@ -1,7 +1,12 @@
 #Ek5
 
+export PATH=$PATH:~/.gem/ruby/2.2.0/bin
+
 bindkey -v
 bindkey "^\[\." insert-last-word
+
+# my hosts file includes tons of spam hosts, disable completion
+zstyle ':completion:*:hosts' hosts 
 
 export EDITOR=vim
 
