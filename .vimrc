@@ -112,3 +112,20 @@ vnoremap <right> <nop>
 vnoremap <left> <nop>
 inoremap <right> <nop>
 
+" visual autocomplete for command menu
+set wildmenu
+
+"
+" ek5: Remapping
+"
+" leader is comma
+let mapleader=","       
+
+" turn off search highlight
+nnoremap <leader><space> :nohlsearch<CR>
+
+" exit insert mode easily pressing j and k consecutively 
+inoremap jk <esc>
+
+" toggle gundo
+"nnoremap <leader>u :GundoToggle<CR>
