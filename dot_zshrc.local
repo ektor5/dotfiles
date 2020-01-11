@@ -1,0 +1,322 @@
+#Ek5
+
+#print time for processes longer than 10 secs
+export REPORTTIME=10
+
+export PATH=$PATH:~/.gem/ruby/2.3.0/bin
+
+#perl deactivated
+#export PATH="/home/ektor-5/perl5/bin${PATH+:}${PATH}"
+#export PERL5LIB="/home/ektor-5/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"
+#export PERL_LOCAL_LIB_ROOT="/home/ektor-5/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
+#export PERL_MB_OPT="--install_base \"/home/ektor-5/perl5\""
+#export PERL_MM_OPT="INSTALL_BASE=/home/ektor-5/perl5"
+
+#vim time!
+export EDITOR=vim
+bindkey -v
+
+#love alt+. though
+bindkey "^\[\." insert-last-word
+
+# my hosts file includes tons of spam hosts, disable completion
+zstyle ':completion:*:hosts' hosts 
+
+# newline in cmdline
+left_items=(rc change-root user at host path vcs newline percent)
+zstyle ':prompt:grml:left:setup' items ${left_items[*]}
+unset left_items
+
+## ALIAS
+alias cp="rsync -aP"
+alias diff="colordiff -u"
+
+alias g="git status"
+alias gd="git diff"
+alias d="df -h"
+alias y="yaourt"
+alias v="vim"
+alias j="journalctl -n50 -f"
+alias dm="dmesg -HTP"
+alias dw="dmesg -Hw"
+alias pigo="ping www.google.it"
+alias sshp="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+alias scpp="scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+alias datestd="date +%Y%m%d"
+
+# ssh copy termite terminfo
+#
+ssh_copy_term(){
+  #( $1 = dest ) 
+  [ -z $1 ] && return 1
+
+  infocmp -x | ssh -t $@ " 
+    cat > $TERM.info && tic -x $TERM.info"
+}
+
+# recursive file rename
+#
+renamerec() { 
+	for i in $(find -maxdepth 1 -name "*$1*")
+	do 
+		mv $i ${i/$1/$2}
+	done
+	for j in $(find -maxdepth 1 -type d ! -name ".")
+	do 
+		cd $j
+		renamerec $1 $2
+		cd .. 
+	done 
+}
+
+# dec2bin converter
+#
+bin() { 
+  [[ $1 != [0-9]* ]] && return
+  local x=$1
+  local n=-1
+  local i 
+  while ((x))
+  do 
+    let n++
+    x=$((x >> 1))
+  done
+  for i in {$n..0}
+  do 
+    echo -n $(( ( $1 & 1 << $i ) >> $i ))
+  done
+  echo
+} 
+
+## git archive
+
+gitsub () {
+    local p="$1"
+    local pref="$2"
+    local output="$3"
+
+    pushd $p >/dev/null
+    echo 1 `pwd`
+    
+    #retrieve modules
+    git submodule init
+    git submodule update
+
+    git submodule foreach | tr -d \' | while read entering subpath 
+    do 
+
+      [ "$subpath" = "" ] && continue;
+      pushd "$p/$subpath" >/dev/null
+      echo 2 `pwd`
+
+      #create a tmpfile
+      tmpout=$(mktemp gitsub-XXXXXX.tar)
+      #create archive of the submodule
+      git archive --format=tar -o $tmpout --prefix="$pref/$subpath/" HEAD
+      #add it to the total
+      tar --concatenate --file="$output" $tmpout
+      #delete the created file
+      rm $tmpout 
+
+      #recursive call
+      gitsub "$p/$subpath" "$pref/$subpath" "$output" 
+
+      #popd >/dev/null
+      echo 3 `pwd`
+
+    done
+
+    popd >/dev/null
+    echo 4 `pwd`
+
+}
+
+gitorig () {
+# VER
+  local p=`pwd`
+
+  local VER="${1:-}"
+  local ORIG=`basename $(git remote show -n origin | grep Fetch | cut -d: -f2-)`
+  local -l NAME="${2:-${ORIG/.git/}}"
+  local BR=${3:-HEAD}
+  (( $? )) && exit 1
+
+  local OUTPUT="$p/../${NAME}_${VER}.orig"
+  local PREF="${NAME}-${VER}"
+
+  if [[ -e .gitmodules ]]
+  then
+    local p=`pwd`
+    local format="tar"
+    local output="$OUTPUT.$format"
+
+    #archive main repo
+    git archive --format=$format -o "$output" --prefix="$PREF/" "$BR"
+    #archive submodules recursively
+    gitsub "$p" "$PREF" "$output"
+    #make a tar.gz
+    gzip "$output"
+
+  else
+    local format="tar.gz"
+    local output="$OUTPUT.$format"
+
+    #archive all
+    git archive --format=$format -o "$output" --prefix="$PREF/" "$BR"
+
+  fi
+
+}
+
+scm_ver()
+{
+  ## from kernel sources
+	local short
+	short=false
+
+	if test "$1" = "--short"; then
+		short=true
+	fi
+
+	# Check for git and a git repo.
+	if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
+	   head=`git rev-parse --verify --short HEAD 2>/dev/null`; then
+
+		# If we are at a tagged commit (like "v2.6.30-rc6"), we ignore
+		# it, because this version is defined in the top level Makefile.
+		if [ -z "`git describe --exact-match 2>/dev/null`" ]; then
+
+			# If only the short version is requested, don't bother
+			# running further git commands
+			if $short; then
+				echo "+"
+				return
+			fi
+			# If we are past a tagged commit (like
+			# "v2.6.30-rc5-302-g72357d5"), we pretty print it.
+			if atag="`git describe 2>/dev/null`"; then
+				#echo "$atag" | awk -F- '{printf("-%05d-%s", $(NF-1),$(NF))}'
+        #edited by ek5 -> 1.6.6+00001+g0bc4b15% (debian need plus)
+        awk -F- '{printf("%s+%05d+%s", $(NF-2), $(NF-1),$(NF))}' <<< "$atag"
+        
+			# If we don't have a tag at all we print -g{commitish}.
+			else
+				printf '%s%s' -g $head
+			fi
+
+    else
+      #we do not have Makefiles lol
+      printf '%s' "`git describe 2>/dev/null`" 
+		fi
+
+		# Is this git on svn?
+		if git config --get svn-remote.svn.url >/dev/null; then
+			printf -- '-svn%s' "`git svn find-rev $head`"
+		fi
+
+		# Check for uncommitted changes
+		if git diff-index --name-only HEAD | grep -qv "^debian/"; then
+			printf '%s' -dirty
+		fi
+
+		# All done with git
+		return
+	fi
+}
+
+gitorigver() {
+  #takes ver from commit, kernel style
+  VER=`scm_ver`
+  gitorig "$VER" $@
+}
+
+gitunpushed() {
+  #checks unpushed repos
+  find $1 \
+    -type d \
+    -name .git \
+    -execdir sh -c '[[ -n $( git cherry 2>/dev/null ) ]] && pwd' \;
+}
+
+gitfindblob() {
+  local obj_name="$1"
+  shift
+  git log "$@" --pretty=format:'%T %h %s' |
+    while read tree commit subject ; do
+      if git ls-tree -r $tree | grep -q "$obj_name" ; then
+        echo $commit "$subject"
+      fi
+    done
+}
+
+#pb
+pb () { 
+  curl -F "c=@${1:--}" https://ptpb.pw/${2} 
+}
+
+pbx () { 
+  curl -sF "c=@${1:--}" -w "%{redirect_url}" 'https://ptpb.pw/?r=1' \
+    -o /dev/stderr | xsel -l /dev/null -b 
+}
+
+pbs () {
+  gm import -window ${1:-root} /tmp/$$.png
+  pbx /tmp/$$.png
+}
+
+#Termite 
+if [[ $TERM == xterm-termite ]]; then
+  . /etc/profile.d/vte.sh
+  __vte_osc7
+fi
+
+#ranger
+rg() {
+  if [ -z "$RANGER_LEVEL" ]
+  then
+    ranger
+  else
+    exit
+  fi
+}   
+
+# Compatible with ranger 1.4.2 through 1.7.*
+#
+# Automatically change the directory in bash after closing ranger
+#
+# This is a bash function for .bashrc to automatically change the directory to
+# the last visited one after ranger quits.
+# To undo the effect of this function, you can type "cd -" to return to the
+# original directory.
+
+function ranger-cd {
+    tempfile="$(mktemp)"
+    /usr/bin/ranger --choosedir="$tempfile" "${@:-$(pwd)}"
+    test -f "$tempfile" &&
+    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
+        cd -- "$(cat "$tempfile")"
+    fi
+    rm -f -- "$tempfile"
+}
+
+function ranger-cd-show() { BUFFER="ranger-cd"; zle accept-line; }
+
+zle -N ranger-cd-show
+
+# This binds Ctrl-O to ranger-cd:
+bindkey "\C-o" ranger-cd-show
+
+# function zle-line-init zle-keymap-select {
+#   VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
+#   RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $(git_custom_status) $EPS1"
+#   zle reset-prompt
+# }
+# zle -N zle-line-init
+# zle -N zle-keymap-select
+
+## powerline
+#. /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+
+# syntax
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+

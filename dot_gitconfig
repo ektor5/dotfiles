@@ -1,0 +1,22 @@
+[credential]
+	helper = /usr/share/git/credential/gnome-keyring/git-credential-gnome-keyring
+[sendemail]
+	smtpEncryption = tls
+	smtpServer = smtp.gmail.com
+	smtpUser = ek5.chimenti@gmail.com
+	smtpServerPort = 587
+[user]
+	name = ektor5
+	email = ek5.chimenti@gmail.com
+[http]
+	sslVerify = true
+[push]
+	default = simple
+[help]
+	autocorrect = 30
+[diff "exif"]
+	textconv = exiftool
+[alias]
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit --all
+[rerere]
+	enabled = true

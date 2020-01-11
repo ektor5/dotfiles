@@ -1,0 +1,17 @@
+#!/bin/bash
+
+while true; do
+  playing="$(mpc current -f "[%artist% - ]%title% (%date%)")"
+
+  if [[ -z $playing ]]; then
+    status="◼ "
+    playing="Stopped"
+  else
+    status="►"
+    mpc | grep "\[paused\]" 1>/dev/null && status="▷"
+  fi
+  playing="$status $playing"
+  echo "${playing}"
+
+  mpc idle player > /dev/null
+done

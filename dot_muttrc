@@ -1,0 +1,83 @@
+#whoami
+set my_name = "Ettore Chimenti"
+set realname = 'Ettore Chimenti'
+#set from = "ettore.chimenti@udoo.org"
+set from = "ek5.chimenti@gmail.com"
+alternates ^ek5\.chimenti@gmail\.com$	^ettore\.chimenti@udoo\.org$
+set use_from
+set reverse_name
+
+set my_user = "ek5.chimenti@gmail.com"
+set my_pass = `secret-tool lookup neomutt-account 'ek5.chimenti@gmail.com@smtp.gmail.com'`
+
+set smtp_url=smtps://$my_user:$my_pass@smtp.gmail.com
+set ssl_force_tls = yes
+unset ssl_starttls
+
+set imap_pass=$my_pass
+set imap_user=$my_user
+set folder = imaps://imap.gmail.com/
+set spoolfile = +INBOX
+set postponed = +[Gmail]/Bozze
+set record = "=[Gmail]/Posta inviata"
+
+mailboxes = +Udoo/CEC 
+unset imap_passive
+set imap_check_subscribed
+set imap_keepalive = 300
+set message_cachedir = "~/.muttcache"
+set header_cache = "~/.muttcache/headerdb"
+# How often to check for new mail (time in seconds).
+set mail_check = 120
+
+set sort=threads
+set sort_aux=last-date-received
+
+auto_view text/x-diff
+auto_view text/x-patch
+set allow_ansi
+
+set editor="vim"
+
+#diff coloring
+color body green default "^diff \-.*"
+color body green default "^index [a-f0-9].*"
+color body green default "^\-\-\- .*"
+color body green default "^[\+]{3} .*"
+color body cyan default "^[\+][^\+]+.*"
+color body red  default "^\-[^\-]+.*"
+color body brightblue default "^@@ .*"
+
+#vim bindings
+bind pager j next-line
+bind pager k previous-line
+bind attach,index,pager \CD next-page
+bind attach,index,pager \CU previous-page
+bind pager g top
+bind pager G bottom
+bind attach,index g first-entry
+bind attach,index G last-entry
+bind pager,index Z group-reply
+
+# -*-muttrc-*-
+# Palette for use with the Linux console.  Black background.
+
+color hdrdefault blue black
+color quoted blue black
+color signature blue black
+color attachment red black
+color prompt brightmagenta black
+color message brightred black
+color error brightred black
+color indicator black red
+color status brightgreen blue
+color tree white black
+color normal white black
+color markers red black
+color search white black
+color tilde brightmagenta black
+color index blue black ~F
+color index red black "~N|~O"
+
+# color body brightwhite black '\*+[^*]+\*+'
+# color body brightwhite black '_+[^_]+_+'
