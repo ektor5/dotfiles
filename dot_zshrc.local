@@ -12,6 +12,9 @@ export PATH=$PATH:~/.gem/ruby/2.3.0/bin
 #export PERL_MB_OPT="--install_base \"/home/ektor-5/perl5\""
 #export PERL_MM_OPT="INSTALL_BASE=/home/ektor-5/perl5"
 
+# LESS but more color
+export LESS=-R
+
 #vim time!
 export EDITOR=vim
 bindkey -v

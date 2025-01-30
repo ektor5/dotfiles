@@ -124,7 +124,7 @@ inoremap <right> <nop>
 set wildmenu
 
 " colorscheme
-colorscheme badwolf
+colorscheme seti
 
 " UI Config
 set number              " show line numbers
@@ -146,14 +146,12 @@ inoremap jk <esc>
 " toggle gundo
 "nnoremap <leader>u :GundoToggle<CR>
 
-" Copy to X CLIPBOARD
-map <leader>yy :w !xsel -i -b<CR>
-map <leader>yp :w !xsel -i -p<CR>
-map <leader>ys :w !xsel -i -s<CR>
-" Paste from X CLIPBOARD
-map <leader>pp :r !xsel -p<CR>
-map <leader>ps :r !xsel -s<CR>
-map <leader>pb :r !xsel -b<CR>
+" Copy to CLIPBOARD
+map <leader>yy :w !wl-copy <CR>
+map <leader>yp :w !wl-copy -p<CR>
+" Paste from CLIPBOARD
+map <leader>pp :r !wl-paste <CR>
+map <leader>ps :r !wl-paste -p<CR>
 
 " powerline
 let $PYTHONPATH='/usr/lib/python3.5/site-packages'
@@ -197,14 +195,8 @@ let g:syntastic_check_on_wq = 0
 " Org
 let g:org_agenda_files=['~/org/*.org']
 
-" C.Vim
-let g:C_CFlags = '-Wall -g -O0 -c -I/lib/modules/4.10.6-1-ARCH/build/include'
-
 " Fugitive
 nmap <C-g> :Gstatus<CR>
 nmap <leader>gs :Gstatus<CR>
 nmap <leader>gd :Gdiff<CR>
 nmap <leader>gb :Gblame<CR>
-
-" pathogen
-execute pathogen#infect()
