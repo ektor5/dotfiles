@@ -3,7 +3,7 @@
 #print time for processes longer than 10 secs
 export REPORTTIME=10
 
-export PATH=$PATH:~/.gem/ruby/2.3.0/bin
+#export PATH=$PATH:~/.gem/ruby/2.3.0/bin
 
 #perl deactivated
 #export PATH="/home/ektor-5/perl5/bin${PATH+:}${PATH}"
@@ -11,6 +11,9 @@ export PATH=$PATH:~/.gem/ruby/2.3.0/bin
 #export PERL_LOCAL_LIB_ROOT="/home/ektor-5/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"
 #export PERL_MB_OPT="--install_base \"/home/ektor-5/perl5\""
 #export PERL_MM_OPT="INSTALL_BASE=/home/ektor-5/perl5"
+
+# ssh agent
+export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 
 # LESS but more color
 export LESS=-R
